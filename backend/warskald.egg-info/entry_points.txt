@@ -1,0 +1,5 @@
+[console_scripts]
+ngwidget = warskald.ngwidget:main
+pybuild = warskald.pybuild:main
+s3cli = warskald.s3cli:main
+wslatest = warskald.ws_latest:main

@@ -1,0 +1,33 @@
+APP_NAME='bt_campaign_mgr'
+
+KEY_SWAP = {
+    'class': 'mech_class',
+    'troid': 'tro_id',
+    'bfdamage_medium': 'bf_damage_medium',
+    'bfdamage_extreme': 'bf_damage_extreme',
+    'bfdamage_long': 'bf_damage_long',
+    'bfdamage_exteme_min': 'bf_damage_extreme_min',
+    'bfdamage_medium_min': 'bf_damage_medium_min',
+    'bfabilities': 'bf_abilities',
+    'rsid': 'rs_id',
+    'bfarmor': 'bf_armor',
+    'bfmove': 'bf_move',
+    'bftmm': 'bf_tmm',
+    'bfstructure': 'bf_structure',
+    'bfdamage_short': 'bf_damage_short',
+    'bfdamage_long_min': 'bf_damage_long_min',
+    'bfsize': 'bf_size',
+    'bfthreshold': 'bf_threshold',
+    'bfoverheat': 'bf_overheat',
+    'bfdamage_short_min': 'bf_damage_short_min',
+    'bfpoint_value': 'bf_point_value',
+    'bftype': 'bf_type',
+    'TechBase': 'tech_base',
+    'techbase': 'tech_base',
+    'imagefile': 'image_file',
+    'primaryfactory': 'primary_factory',
+    'systemmanufacturer': 'system_manufacturer',
+    'systemmodel': 'system_mode',
+    'systemmode': 'system_mode',
+}
+
