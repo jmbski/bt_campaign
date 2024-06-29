@@ -27,7 +27,17 @@ session_factory = sessionmaker(bind=engine)
 DBSession = scoped_session(session_factory)
 
 def props_to_filters(entity: Base, props: dict, loose: bool = False) -> list:
-    """ Function to convert properties to filters """
+    """ Function to convert properties to filters
+
+    Args:
+        entity (Base): The entity to filter
+        props (dict): The properties to filter by
+        loose (bool, optional): Whether to use loose matching. Defaults to False.
+
+    Returns:
+        list: The filters
+    """
+    
     filters = []
 
     if(loose):
@@ -58,6 +68,7 @@ def props_to_filters(entity: Base, props: dict, loose: bool = False) -> list:
     return filters
 
 class QueryObject:
+        """ Class to handle database queries """
         
         def __init__(self, entity: Base, session: Session = None):
             if(entity is None):
@@ -75,7 +86,12 @@ class QueryObject:
                 raise exc_type(exc_val)
             
         def close_session(self, commit: bool = False):
-            """ Function to close a session """
+            """ Function to close the session
+
+            Args:
+                commit (bool, optional): Whether to commit the session. Defaults to False.
+            """
+            
             if(commit):
                 self.session.commit()
             self.session.close()
@@ -88,28 +104,51 @@ class QueryObject:
                 params (dict): The parameters to clean
                 _class (type): The class to clean the parameters for
             """
+            
             if(params is None):
                 return {}
             
             return {key: value for key, value in params.items() if hasattr(self.entity, key)}
             
         def get(self, **where_props) -> Base:
+            """ Function to get a record from the database
+
+            Returns:
+                Base: The record found
+            """
+            
             where_props = self.clean_params(where_props)
+            
             return self.session.query(self.entity).filter_by(**where_props).first()
         
         def get_multiple(self, loose: bool = False, *cust_filters, **where_props) -> list[Base]:
+            """ Function to get multiple records from the database
+
+            Args:
+                loose (bool, optional): Whether to use loose matching. Defaults to False.  
+
+            Returns:
+                list[Base]: The records found
+            """
+            
             where_props = self.clean_params(where_props)
             
             filters = props_to_filters(self.entity, where_props, loose)
+            
             if(cust_filters):
                 filters.extend(cust_filters)
                 
             return self.session.query(self.entity).filter(and_(*filters)).all()
         
         def save(self, **props) -> Base:
+            """ Function to save a record in the database
+
+            Returns:
+                Base: The saved entity
+            """
+                        
             props = self.clean_params(props)
             
-            #entity = self.entity(**props)
             saved_obj = self.session.scalars(
                 insert(self.entity)
                 .values(props)
@@ -119,6 +158,14 @@ class QueryObject:
             return saved_obj
         
         def save_bulk(self, data: list[dict]) -> list[Base]:
+            """ Function to save a list of data objects
+
+            Args:
+                data (list[dict]): The data objects to save
+
+            Returns:
+                list[Base]: The saved entities
+            """            
             
             data = [self.clean_params(props) for props in data]
             
@@ -127,21 +174,38 @@ class QueryObject:
             self.session.add_all(entities)
             return entities
         
-        def update(self, values: dict, **where_props) -> bool:
+        def update(self, values: dict, **where_props) -> int:
+            """ Function to update records in the database
+
+            Args:
+                values (dict): The values to update
+
+            Returns:
+                int: The number of records updated
+            """
+                        
             where_props = self.clean_params(where_props)
             try:
-                self.session.scalars(
+                updated_records = self.session.scalars(
                     update(self.entity)
                     .where(**where_props)
                     .values(values)
                     .returning(self.entity)
-                ).first()
+                ).all()
+                
+                return len(updated_records)
+                
             except Exception as e:
                 print(e.with_traceback(sys.exc_info()[2]))
                 return e
-            return True
             
         def delete(self, **where_props) -> int:
+            """ Function to delete records from the database
+
+            Returns:
+                int: The number of records deleted
+            """
+                        
             where_props = self.clean_params(where_props)
             try:
                 deleted_rows = self.session.scalars(
